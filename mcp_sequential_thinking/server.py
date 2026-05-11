@@ -37,7 +37,7 @@ async def process_thought(
     tags: list[str] = [],
     axioms_used: list[str] = [],
     assumptions_challenged: list[str] = [],
-    ctx: Context | None = None,
+    ctx: Context[Any, Any, Any] | None = None,
 ) -> dict[str, Any]:
     """Add a sequential thought with its metadata.
 
