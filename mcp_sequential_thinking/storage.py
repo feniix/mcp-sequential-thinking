@@ -1,16 +1,15 @@
-import json
-import logging
-import os
 import threading
-from typing import List, Optional, Dict, Any
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+from typing import List, Optional
 
-import portalocker
-
-from .models import ThoughtData, ThoughtStage
 from .logging_conf import configure_logging
-from .storage_utils import prepare_thoughts_for_serialization, save_thoughts_to_file, load_thoughts_from_file
+from .models import ThoughtData, ThoughtStage
+from .storage_utils import (
+    load_thoughts_from_file,
+    prepare_thoughts_for_serialization,
+    save_thoughts_to_file,
+)
 
 logger = configure_logging("sequential-thinking.storage")
 
@@ -49,7 +48,9 @@ class ThoughtStorage:
         """Load thought history from the current session file if it exists."""
         with self._lock:
             # Use the utility function to handle loading with proper error handling
-            self.thought_history = load_thoughts_from_file(self.current_session_file, self.lock_file)
+            self.thought_history = load_thoughts_from_file(
+                self.current_session_file, self.lock_file
+            )
 
     def _save_session(self) -> None:
         """Save the current thought history to the session file."""
@@ -57,7 +58,7 @@ class ThoughtStorage:
         with self._lock:
             # Use utility functions to prepare and save thoughts
             thoughts_with_ids = prepare_thoughts_for_serialization(self.thought_history)
-        
+
         # Save to file with proper locking
         save_thoughts_to_file(self.current_session_file, thoughts_with_ids, self.lock_file)
 
@@ -108,7 +109,7 @@ class ThoughtStorage:
         with self._lock:
             # Use utility function to prepare thoughts for serialization
             thoughts_with_ids = prepare_thoughts_for_serialization(self.thought_history)
-            
+
             # Create export-specific metadata
             metadata = {
                 "exportedAt": datetime.now().isoformat(),
@@ -117,14 +118,14 @@ class ThoughtStorage:
                     "stages": {
                         stage.value: len([t for t in self.thought_history if t.stage == stage])
                         for stage in ThoughtStage
-                    }
-                }
+                    },
+                },
             }
-        
+
         # Convert string path to Path object for compatibility with utility
         file_path_obj = Path(file_path)
-        lock_file = file_path_obj.with_suffix('.lock')
-        
+        lock_file = file_path_obj.with_suffix(".lock")
+
         # Use utility function to save with proper locking
         save_thoughts_to_file(file_path_obj, thoughts_with_ids, lock_file, metadata)
 
@@ -141,11 +142,11 @@ class ThoughtStorage:
         """
         # Convert string path to Path object for compatibility with utility
         file_path_obj = Path(file_path)
-        lock_file = file_path_obj.with_suffix('.lock')
-        
+        lock_file = file_path_obj.with_suffix(".lock")
+
         # Use utility function to load thoughts with proper error handling
         thoughts = load_thoughts_from_file(file_path_obj, lock_file)
-        
+
         with self._lock:
             self.thought_history = thoughts
 

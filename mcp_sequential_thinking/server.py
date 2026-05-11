@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import List, Optional  # Optional still needed for ctx: Optional[Context]
+from typing import Any, Optional  # Optional still needed for ctx: Optional[Context]
 
 from mcp.server.fastmcp import Context, FastMCP
 
@@ -27,18 +27,18 @@ storage_dir = os.environ.get("MCP_STORAGE_DIR", None)
 storage = ThoughtStorage(storage_dir)
 
 
-@mcp.tool()
-def process_thought(
+@mcp.tool()  # pyright: ignore[reportUnknownMemberType, reportUntypedFunctionDecorator]
+async def process_thought(
     thought: str,
     thought_number: int,
     total_thoughts: int,
     next_thought_needed: bool,
     stage: str,
-    tags: List[str] = [],
-    axioms_used: List[str] = [],
-    assumptions_challenged: List[str] = [],
+    tags: list[str] = [],
+    axioms_used: list[str] = [],
+    assumptions_challenged: list[str] = [],
     ctx: Optional[Context] = None,
-) -> dict:
+) -> dict[str, Any]:
     """Add a sequential thought with its metadata.
 
     Args:
@@ -61,7 +61,7 @@ def process_thought(
 
         # Report progress if context is available
         if ctx:
-            ctx.report_progress(thought_number - 1, total_thoughts)
+            await ctx.report_progress(thought_number - 1, total_thoughts)
 
         # Convert stage string to enum
         thought_stage = ThoughtStage.from_string(stage)
@@ -98,8 +98,8 @@ def process_thought(
         return {"error": str(e), "status": "failed"}
 
 
-@mcp.tool()
-def generate_summary() -> dict:
+@mcp.tool()  # pyright: ignore[reportUnknownMemberType, reportUntypedFunctionDecorator]
+def generate_summary() -> dict[str, Any]:
     """Generate a summary of the entire thinking process.
 
     Returns:
@@ -118,8 +118,8 @@ def generate_summary() -> dict:
         return {"error": str(e), "status": "failed"}
 
 
-@mcp.tool()
-def clear_history() -> dict:
+@mcp.tool()  # pyright: ignore[reportUnknownMemberType, reportUntypedFunctionDecorator]
+def clear_history() -> dict[str, Any]:
     """Clear the thought history.
 
     Returns:
@@ -134,8 +134,8 @@ def clear_history() -> dict:
         return {"error": str(e), "status": "failed"}
 
 
-@mcp.tool()
-def export_session(file_path: str) -> dict:
+@mcp.tool()  # pyright: ignore[reportUnknownMemberType, reportUntypedFunctionDecorator]
+def export_session(file_path: str) -> dict[str, Any]:
     """Export the current thinking session to a file.
 
     Args:
@@ -153,8 +153,8 @@ def export_session(file_path: str) -> dict:
         return {"error": str(e), "status": "failed"}
 
 
-@mcp.tool()
-def import_session(file_path: str) -> dict:
+@mcp.tool()  # pyright: ignore[reportUnknownMemberType, reportUntypedFunctionDecorator]
+def import_session(file_path: str) -> dict[str, Any]:
     """Import a thinking session from a file.
 
     Args:
@@ -172,7 +172,7 @@ def import_session(file_path: str) -> dict:
         return {"error": str(e), "status": "failed"}
 
 
-def main():
+def main() -> None:
     """Entry point for the MCP server."""
     logger.info("Starting Sequential Thinking MCP server")
 

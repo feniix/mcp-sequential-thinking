@@ -1,12 +1,14 @@
-from typing import List, Optional, Dict, Any
-from enum import Enum
 from datetime import datetime
-from uuid import uuid4, UUID
-from pydantic import BaseModel, Field, field_validator
+from enum import Enum
+from typing import Any
+from uuid import UUID, uuid4
+
+from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
 
 class ThoughtStage(Enum):
     """Basic thinking stages for structured sequential thinking."""
+
     PROBLEM_DEFINITION = "Problem Definition"
     RESEARCH = "Research"
     ANALYSIS = "Analysis"
@@ -14,7 +16,7 @@ class ThoughtStage(Enum):
     CONCLUSION = "Conclusion"
 
     @classmethod
-    def from_string(cls, value: str) -> 'ThoughtStage':
+    def from_string(cls, value: str) -> "ThoughtStage":
         """Convert a string to a thinking stage.
 
         Args:
@@ -38,50 +40,51 @@ class ThoughtStage(Enum):
 
 class ThoughtData(BaseModel):
     """Data structure for a single thought in the sequential thinking process."""
+
     thought: str
     thought_number: int
     total_thoughts: int
     next_thought_needed: bool
     stage: ThoughtStage
-    tags: List[str] = Field(default_factory=list)
-    axioms_used: List[str] = Field(default_factory=list)
-    assumptions_challenged: List[str] = Field(default_factory=list)
+    tags: list[str] = Field(default_factory=list)
+    axioms_used: list[str] = Field(default_factory=list)
+    assumptions_challenged: list[str] = Field(default_factory=list)
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
     id: UUID = Field(default_factory=uuid4)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Make ThoughtData hashable based on its ID."""
         return hash(self.id)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Compare ThoughtData objects based on their ID."""
         if not isinstance(other, ThoughtData):
             return False
         return self.id == other.id
 
-    @field_validator('thought')
+    @field_validator("thought")
     def thought_not_empty(cls, v: str) -> str:
         """Validate that thought content is not empty."""
         if not v or not v.strip():
             raise ValueError("Thought content cannot be empty")
         return v
 
-    @field_validator('thought_number')
+    @field_validator("thought_number")
     def thought_number_positive(cls, v: int) -> int:
         """Validate that thought number is positive."""
         if v < 1:
             raise ValueError("Thought number must be positive")
         return v
 
-    @field_validator('total_thoughts')
-    def total_thoughts_valid(cls, v: int, values: Dict[str, Any]) -> int:
+    @field_validator("total_thoughts")
+    def total_thoughts_valid(cls, v: int, info: ValidationInfo) -> int:
         """Validate that total thoughts is valid."""
-        thought_number = values.data.get('thought_number')
+        thought_number = info.data.get("thought_number")
         if thought_number is not None and v < thought_number:
             raise ValueError("Total thoughts must be greater or equal to current thought number")
         return v
 
-    def validate(self) -> bool:
+    def validate(self) -> bool:  # pyright: ignore[reportIncompatibleMethodOverride]
         """Legacy validation method for backward compatibility.
 
         Returns:
@@ -93,7 +96,7 @@ class ThoughtData(BaseModel):
         # Validation is now handled by Pydantic automatically
         return True
 
-    def to_dict(self, include_id: bool = False) -> dict:
+    def to_dict(self, include_id: bool = False) -> dict[str, Any]:
         """Convert the thought data to a dictionary representation.
 
         Args:
@@ -107,27 +110,27 @@ class ThoughtData(BaseModel):
 
         # Get all model fields, excluding internal properties
         data = self.model_dump()
-        
+
         # Handle special conversions
         data["stage"] = self.stage.value
-        
+
         if not include_id:
             # Remove ID for external representations
             data.pop("id", None)
         else:
             # Convert ID to string for JSON serialization
             data["id"] = str(data["id"])
-        
+
         # Convert snake_case keys to camelCase for API consistency
-        result = {}
+        result: dict[str, Any] = {}
         for key, value in data.items():
             if key == "stage":
                 # Stage is already handled above
                 continue
-                
+
             camel_key = to_camel_case(key)
             result[camel_key] = value
-        
+
         # Ensure these fields are always present with camelCase naming
         result["thought"] = self.thought
         result["thoughtNumber"] = self.thought_number
@@ -138,11 +141,11 @@ class ThoughtData(BaseModel):
         result["axiomsUsed"] = self.axioms_used
         result["assumptionsChallenged"] = self.assumptions_challenged
         result["timestamp"] = self.timestamp
-        
+
         return result
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'ThoughtData':
+    def from_dict(cls, data: dict[str, Any]) -> "ThoughtData":
         """Create a ThoughtData instance from a dictionary.
 
         Args:
@@ -151,32 +154,33 @@ class ThoughtData(BaseModel):
         Returns:
             ThoughtData: A new ThoughtData instance
         """
-        from .utils import to_snake_case
-        
         # Convert any camelCase keys to snake_case
-        snake_data = {}
+        snake_data: dict[str, Any] = {}
         mappings = {
             "thoughtNumber": "thought_number",
             "totalThoughts": "total_thoughts",
             "nextThoughtNeeded": "next_thought_needed",
             "axiomsUsed": "axioms_used",
-            "assumptionsChallenged": "assumptions_challenged"
+            "assumptionsChallenged": "assumptions_challenged",
         }
-        
+
         # Process known direct mappings
         for camel_key, snake_key in mappings.items():
             if camel_key in data:
                 snake_data[snake_key] = data[camel_key]
-        
+
         # Copy fields that don't need conversion
         for key in ["thought", "tags", "timestamp"]:
             if key in data:
                 snake_data[key] = data[key]
-                
+
         # Handle special fields
         if "stage" in data:
-            snake_data["stage"] = ThoughtStage.from_string(data["stage"])
-            
+            stage_value = data["stage"]
+            if not isinstance(stage_value, str):
+                raise ValueError("Stage must be a string")
+            snake_data["stage"] = ThoughtStage.from_string(stage_value)
+
         # Set default values for missing fields
         snake_data.setdefault("tags", [])
         snake_data.setdefault("axioms_used", data.get("axiomsUsed", []))
@@ -186,12 +190,11 @@ class ThoughtData(BaseModel):
         # Add ID if present, otherwise generate a new one
         if "id" in data:
             try:
-                snake_data["id"] = UUID(data["id"])
+                id_value = data["id"]
+                snake_data["id"] = UUID(id_value) if isinstance(id_value, str) else uuid4()
             except (ValueError, TypeError):
                 snake_data["id"] = uuid4()
 
         return cls(**snake_data)
 
-    model_config = {
-        "arbitrary_types_allowed": True
-    }
+    model_config = {"arbitrary_types_allowed": True}

@@ -1,6 +1,6 @@
 from collections import Counter
-from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
+from uuid import UUID
 
 from .logging_conf import configure_logging
 from .models import ThoughtData, ThoughtStage
@@ -13,8 +13,8 @@ class ThoughtAnalyzer:
 
     @staticmethod
     def find_related_thoughts(
-        current_thought: ThoughtData, all_thoughts: List[ThoughtData], max_results: int = 3
-    ) -> List[ThoughtData]:
+        current_thought: ThoughtData, all_thoughts: list[ThoughtData], max_results: int = 3
+    ) -> list[ThoughtData]:
         """Find thoughts related to the current thought.
 
         Args:
@@ -34,7 +34,7 @@ class ThoughtAnalyzer:
 
         # Then, find thoughts with similar tags
         if current_thought.tags:
-            tag_matches = []
+            tag_matches: list[tuple[ThoughtData, int]] = []
             for thought in all_thoughts:
                 if thought.id == current_thought.id:
                     continue
@@ -48,11 +48,11 @@ class ThoughtAnalyzer:
             tag_matches.sort(key=lambda x: x[1], reverse=True)
             tag_related = [t[0] for t in tag_matches]
         else:
-            tag_related = []
+            tag_related: list[ThoughtData] = []
 
         # Combine and deduplicate results
-        combined = []
-        seen_ids = set()
+        combined: list[ThoughtData] = []
+        seen_ids: set[UUID] = set()
 
         # First add same stage thoughts
         for thought in same_stage:
@@ -76,7 +76,7 @@ class ThoughtAnalyzer:
         return combined
 
     @staticmethod
-    def generate_summary(thoughts: List[ThoughtData]) -> Dict[str, Any]:
+    def generate_summary(thoughts: list[ThoughtData]) -> dict[str, Any]:
         """Generate a summary of the thinking process.
 
         Args:
@@ -89,7 +89,7 @@ class ThoughtAnalyzer:
             return {"summary": "No thoughts recorded yet"}
 
         # Group thoughts by stage
-        stages = {}
+        stages: dict[str, list[ThoughtData]] = {}
         for thought in thoughts:
             if thought.stage.value not in stages:
                 stages[thought.stage.value] = []
@@ -97,15 +97,15 @@ class ThoughtAnalyzer:
 
         # Count tags - using a more readable approach with explicit steps
         # Collect all tags from all thoughts
-        all_tags = []
+        all_tags: list[str] = []
         for thought in thoughts:
             all_tags.extend(thought.tags)
 
         # Count occurrences of each tag
-        tag_counts = Counter(all_tags)
+        tag_counts: Counter[str] = Counter(all_tags)
 
         # Get the 5 most common tags
-        top_tags = tag_counts.most_common(5)
+        top_tags: list[tuple[str, int]] = tag_counts.most_common(5)
 
         # Create summary
         try:
@@ -127,16 +127,18 @@ class ThoughtAnalyzer:
             # maintainable list comprehensions
 
             # Count thoughts by stage
-            stage_counts = {stage: len(thoughts_list) for stage, thoughts_list in stages.items()}
+            stage_counts: dict[str, int] = {
+                stage: len(thoughts_list) for stage, thoughts_list in stages.items()
+            }
 
             # Create timeline entries
             sorted_thoughts = sorted(thoughts, key=lambda x: x.thought_number)
-            timeline_entries = []
+            timeline_entries: list[dict[str, int | str]] = []
             for t in sorted_thoughts:
                 timeline_entries.append({"number": t.thought_number, "stage": t.stage.value})
 
             # Create top tags entries
-            top_tags_entries = []
+            top_tags_entries: list[dict[str, int | str]] = []
             for tag, count in top_tags:
                 top_tags_entries.append({"tag": tag, "count": count})
 
@@ -144,7 +146,7 @@ class ThoughtAnalyzer:
             all_stages_present = all(stage.value in stages for stage in ThoughtStage)
 
             # Assemble the final summary
-            summary = {
+            summary: dict[str, Any] = {
                 "totalThoughts": len(thoughts),
                 "stages": stage_counts,
                 "timeline": timeline_entries,
@@ -161,7 +163,7 @@ class ThoughtAnalyzer:
         return {"summary": summary}
 
     @staticmethod
-    def analyze_thought(thought: ThoughtData, all_thoughts: List[ThoughtData]) -> Dict[str, Any]:
+    def analyze_thought(thought: ThoughtData, all_thoughts: list[ThoughtData]) -> dict[str, Any]:
         """Analyze a single thought in the context of all thoughts.
 
         Args:
