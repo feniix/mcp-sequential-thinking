@@ -76,9 +76,9 @@ mcp-sequential-thinking/
    uv pip install -e .
 
    # For development with testing tools
-   uv pip install -e ".[dev]"
+   uv sync --group dev
 
-   # For all optional dependencies
+   # For all optional runtime extras
    uv pip install -e ".[all]"
    ```
 
@@ -93,11 +93,12 @@ mcp-sequential-thinking/
 
 3. **Run Tests**
    ```bash
-   # Run all tests
-   pytest
+   # Run all tests with coverage
+   uv run --group dev pytest
 
-   # Run with coverage report
-   pytest --cov=mcp_sequential_thinking
+   # Run linting and type checks
+   uv run --group dev ruff check .
+   uv run --group dev basedpyright
    ```
 
 ## Claude Desktop Integration
