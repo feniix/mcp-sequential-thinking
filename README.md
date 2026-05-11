@@ -68,6 +68,26 @@ mcp-sequential-thinking/
 
 ## Quick Start
 
+### Use from PyPI
+
+If you just want to use the MCP server, you do not need to clone this repository.
+
+```bash
+# Run the latest published package directly
+uvx --from sequential-thinking mcp-sequential-thinking
+
+# Or install the command as a persistent uv tool
+uv tool install sequential-thinking
+mcp-sequential-thinking
+
+# Or install it into a project/virtual environment
+uv venv
+uv pip install sequential-thinking
+mcp-sequential-thinking
+```
+
+### Local development
+
 1. **Set Up Project**
    ```bash
    # Create and activate virtual environment
@@ -75,7 +95,7 @@ mcp-sequential-thinking/
    .venv\Scripts\activate  # Windows
    source .venv/bin/activate  # Unix
 
-   # Install package and dependencies
+   # Install package and dependencies in editable mode
    uv pip install -e .
 
    # For development with testing tools
@@ -146,9 +166,26 @@ If you have set up the project with `uv venv && uv pip install -e .`, point dire
 }
 ```
 
-### Option 3: Using the installed entry point
+### Option 3: Using PyPI with uvx (recommended for users)
 
-If you've installed the package globally with `pip install -e .`:
+```json
+{
+  "mcpServers": {
+    "sequential-thinking": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "sequential-thinking",
+        "mcp-sequential-thinking"
+      ]
+    }
+  }
+}
+```
+
+### Option 4: Using the installed entry point
+
+If you've installed the command with `uv tool install sequential-thinking`, `pip install sequential-thinking`, or `uv pip install sequential-thinking`:
 
 ```json
 {
@@ -160,7 +197,9 @@ If you've installed the package globally with `pip install -e .`:
 }
 ```
 
-### Option 4: Using uvx (no local install needed)
+### Option 5: Using uvx from GitHub
+
+Use this if you want the latest repository version instead of the latest PyPI release:
 
 ```json
 {
@@ -306,7 +345,7 @@ Add to your Gemini CLI settings at `~/.gemini/settings.json`:
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/feniix/mcp-sequential-thinking",
+        "sequential-thinking",
         "mcp-sequential-thinking"
       ],
       "env": {}
@@ -315,7 +354,7 @@ Add to your Gemini CLI settings at `~/.gemini/settings.json`:
 }
 ```
 
-> **Tip:** All editor configurations above use `uv run` or `uvx`. You can also point directly to the venv Python interpreter (see [Claude Desktop Option 1](#option-1-using-the-virtual-environment-recommended-for-linuxmacos)) or use `uvx` (see [Option 4](#option-4-using-uvx-no-local-install-needed)) if you prefer not to clone the repository.
+> **Tip:** For normal use, prefer the PyPI `uvx --from sequential-thinking mcp-sequential-thinking` configuration. For local development, use `uv run --directory /path/to/mcp-sequential-thinking -m mcp_sequential_thinking.server` or point directly to the venv Python interpreter (see [Claude Desktop Option 1](#option-1-using-the-virtual-environment-recommended-for-linuxmacos)).
 
 # How It Works
 
