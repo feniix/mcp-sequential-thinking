@@ -78,8 +78,6 @@ mcp-sequential-thinking/
    # For development with testing tools
    uv sync --group dev
 
-   # For all optional runtime extras
-   uv pip install -e ".[all]"
    ```
 
 2. **Run the Server**
