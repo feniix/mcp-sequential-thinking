@@ -48,9 +48,8 @@ def save_thoughts_to_file(
     lock_file.parent.mkdir(parents=True, exist_ok=True)
 
     # Use file locking to ensure thread safety when writing
-    with portalocker.Lock(lock_file, timeout=10):
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
+    with portalocker.Lock(lock_file, timeout=10), open(file_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
     logger.debug(f"Saved {len(thoughts)} thoughts to {file_path}")
 
@@ -75,9 +74,8 @@ def load_thoughts_from_file(file_path: Path, lock_file: Path) -> list[ThoughtDat
     try:
         # Use file locking and file handling in a single with statement
         # for cleaner resource management
-        with portalocker.Lock(lock_file, timeout=10):
-            with open(file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+        with portalocker.Lock(lock_file, timeout=10), open(file_path, encoding="utf-8") as f:
+            data = json.load(f)
 
         if not isinstance(data, dict):
             return []

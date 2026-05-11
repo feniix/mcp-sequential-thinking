@@ -21,13 +21,6 @@ dependencies = [
 mcp-sequential-thinking = "mcp_sequential_thinking.server:main"
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "ruff>=0.8.0",
-    "basedpyright>=1.21.0",
-]
-
 vis = [
     "matplotlib>=3.5.0",
     "numpy>=1.20.0",
@@ -39,7 +32,27 @@ web = [
 ]
 
 all = [
-    "sequential-thinking[dev,vis,web]",
+    "sequential-thinking[vis,web]",
+]
+
+[dependency-groups]
+dev = [
+    { include-group = "test" },
+    { include-group = "lint" },
+    { include-group = "type" },
+]
+
+test = [
+    "pytest>=9.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+lint = [
+    "ruff>=0.8.0",
+]
+
+type = [
+    "basedpyright>=1.21.0",
 ]
 
 [project.urls]
@@ -48,18 +61,44 @@ Source = "https://github.com/arben-adm/sequential-thinking"
 [tool.hatch.build.targets.wheel]
 packages = ["mcp_sequential_thinking"]
 
-[tool.pytest.ini_options]
+[tool.pytest]
+minversion = "9.0"
 testpaths = ["tests"]
-python_files = "test_*.py"
-python_classes = "Test*"
-python_functions = "test_*"
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+xfail_strict = true
+addopts = [
+    "-ra",
+    "--strict-config",
+    "--strict-markers",
+    "--import-mode=importlib",
+    "--cov=mcp_sequential_thinking",
+    "--cov-report=term-missing",
+    "--cov-branch",
+]
 
 [tool.ruff]
 line-length = 100
 target-version = "py310"
 
 [tool.ruff.lint]
-select = ["E4", "E7", "E9", "F", "I"]
+select = ["E", "W", "F", "I", "UP", "B", "C4", "SIM", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+# Keep process_thought's list defaults because they produce simple MCP tool schemas.
+"mcp_sequential_thinking/server.py" = ["B006"]
+
+[tool.coverage.run]
+source = ["mcp_sequential_thinking"]
+branch = true
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = true
+skip_empty = true
+fail_under = 80
 
 [tool.basedpyright]
 include = ["mcp_sequential_thinking", "tests"]

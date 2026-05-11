@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import Any, Optional  # Optional still needed for ctx: Optional[Context]
+from typing import Any
 
 from mcp.server.fastmcp import Context, FastMCP
 
@@ -37,7 +37,7 @@ async def process_thought(
     tags: list[str] = [],
     axioms_used: list[str] = [],
     assumptions_challenged: list[str] = [],
-    ctx: Optional[Context] = None,
+    ctx: Context | None = None,
 ) -> dict[str, Any]:
     """Add a sequential thought with its metadata.
 
@@ -93,7 +93,7 @@ async def process_thought(
 
         return analysis
     except Exception as e:
-        logger.error(f"Error processing thought: {str(e)}")
+        logger.error(f"Error processing thought: {e!s}")
 
         return {"error": str(e), "status": "failed"}
 
@@ -114,7 +114,7 @@ def generate_summary() -> dict[str, Any]:
         # Generate summary
         return ThoughtAnalyzer.generate_summary(all_thoughts)
     except Exception as e:
-        logger.error(f"Error generating summary: {str(e)}")
+        logger.error(f"Error generating summary: {e!s}")
         return {"error": str(e), "status": "failed"}
 
 
@@ -130,7 +130,7 @@ def clear_history() -> dict[str, Any]:
         storage.clear_history()
         return {"status": "success", "message": "Thought history cleared"}
     except Exception as e:
-        logger.error(f"Error clearing history: {str(e)}")
+        logger.error(f"Error clearing history: {e!s}")
         return {"error": str(e), "status": "failed"}
 
 
@@ -149,7 +149,7 @@ def export_session(file_path: str) -> dict[str, Any]:
         storage.export_session(file_path)
         return {"status": "success", "message": f"Session exported to {file_path}"}
     except Exception as e:
-        logger.error(f"Error exporting session: {str(e)}")
+        logger.error(f"Error exporting session: {e!s}")
         return {"error": str(e), "status": "failed"}
 
 
@@ -168,7 +168,7 @@ def import_session(file_path: str) -> dict[str, Any]:
         storage.import_session(file_path)
         return {"status": "success", "message": f"Session imported from {file_path}"}
     except Exception as e:
-        logger.error(f"Error importing session: {str(e)}")
+        logger.error(f"Error importing session: {e!s}")
         return {"error": str(e), "status": "failed"}
 
 

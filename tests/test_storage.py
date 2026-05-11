@@ -41,7 +41,7 @@ class TestThoughtStorage(unittest.TestCase):
         self.assertTrue(session_file.exists())
 
         # Check the content of the session file
-        with open(session_file, "r") as f:
+        with open(session_file) as f:
             data = json.load(f)
             self.assertEqual(len(data["thoughts"]), 1)
             self.assertEqual(data["thoughts"][0]["thought"], "Test thought")
@@ -131,7 +131,7 @@ class TestThoughtStorage(unittest.TestCase):
 
         # Check that the session file was updated
         session_file = Path(self.temp_dir.name) / "current_session.json"
-        with open(session_file, "r") as f:
+        with open(session_file) as f:
             data = json.load(f)
             self.assertEqual(len(data["thoughts"]), 0)
 

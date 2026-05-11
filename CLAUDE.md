@@ -9,11 +9,11 @@ This is a Python MCP server for sequential thinking tools.
 
 Common commands:
 
-- Run tests: `uv run --extra dev pytest`
-- Run a focused test: `uv run --extra dev pytest tests/test_models.py -q`
-- Format Python: `uv run --extra dev ruff format .`
-- Lint/fix Python: `uv run --extra dev ruff check --fix .`
-- Type check: `uv run --extra dev basedpyright`
+- Run tests with coverage: `uv run --group dev pytest`
+- Run a focused test: `uv run --group dev pytest tests/test_models.py -q`
+- Format Python: `uv run --group dev ruff format .`
+- Lint/fix Python: `uv run --group dev ruff check --fix .`
+- Type check: `uv run --group dev basedpyright`
 
 If a command is unavailable in the current environment, say so and choose the closest useful verification.
 

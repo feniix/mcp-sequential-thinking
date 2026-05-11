@@ -1,7 +1,6 @@
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
 
 from .logging_conf import configure_logging
 from .models import ThoughtData, ThoughtStage
@@ -17,7 +16,7 @@ logger = configure_logging("sequential-thinking.storage")
 class ThoughtStorage:
     """Storage manager for thought data."""
 
-    def __init__(self, storage_dir: Optional[str] = None):
+    def __init__(self, storage_dir: str | None = None):
         """Initialize the storage manager.
 
         Args:
@@ -39,7 +38,7 @@ class ThoughtStorage:
 
         # Thread safety
         self._lock = threading.RLock()
-        self.thought_history: List[ThoughtData] = []
+        self.thought_history: list[ThoughtData] = []
 
         # Load existing session if available
         self._load_session()
@@ -72,7 +71,7 @@ class ThoughtStorage:
             self.thought_history.append(thought)
         self._save_session()
 
-    def get_all_thoughts(self) -> List[ThoughtData]:
+    def get_all_thoughts(self) -> list[ThoughtData]:
         """Get all thoughts in the current session.
 
         Returns:
@@ -82,7 +81,7 @@ class ThoughtStorage:
             # Return a copy to avoid external modification
             return list(self.thought_history)
 
-    def get_thoughts_by_stage(self, stage: ThoughtStage) -> List[ThoughtData]:
+    def get_thoughts_by_stage(self, stage: ThoughtStage) -> list[ThoughtData]:
         """Get all thoughts in a specific stage.
 
         Args:

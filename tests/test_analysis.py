@@ -68,7 +68,7 @@ class TestThoughtAnalyzer(unittest.TestCase):
             tags=["climate", "synthesis"],
         )
 
-        all_thoughts = self.all_thoughts + [new_thought]
+        all_thoughts = [*self.all_thoughts, new_thought]
 
         related = ThoughtAnalyzer.find_related_thoughts(new_thought, all_thoughts)
 
