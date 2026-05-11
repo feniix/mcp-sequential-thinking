@@ -1,14 +1,14 @@
-[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/arben-adm-mcp-sequential-thinking-badge.png)](https://mseep.ai/app/arben-adm-mcp-sequential-thinking)
-
 # Sequential Thinking MCP Server
 
 A Model Context Protocol (MCP) server that facilitates structured, progressive thinking through defined stages. This tool helps break down complex problems into sequential thoughts, track the progression of your thinking process, and generate summaries.
 
+Maintained by **Sebastian Otaegui <feniix@gmail.com>**.
+
+This project is based on the original [`arben-adm/mcp-sequential-thinking`](https://github.com/arben-adm/mcp-sequential-thinking) project by Arben Ademi. See [Attribution](#attribution) for details.
+
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
-<a href="https://glama.ai/mcp/servers/m83dfy8feg"><img width="380" height="200" src="https://glama.ai/mcp/servers/m83dfy8feg/badge" alt="Sequential Thinking Server MCP server" /></a>
+[![Lint: Ruff](https://img.shields.io/badge/lint-ruff-46a4f5.svg)](https://docs.astral.sh/ruff/)
 
 ## Features
 
@@ -30,11 +30,11 @@ A Model Context Protocol (MCP) server that facilitates structured, progressive t
 
 ## Key Technologies
 
+- **MCP Python SDK / FastMCP**: For Model Context Protocol integration
 - **Pydantic**: For data validation and serialization
 - **Portalocker**: For thread-safe file access
-- **FastMCP**: For Model Context Protocol integration
-- **Rich**: For enhanced console output
-- **PyYAML**: For configuration management
+- **uv**: For dependency management and reproducible development environments
+- **Ruff + basedpyright**: For linting, formatting, and strict type checking
 
 ## Project Structure
 
@@ -49,10 +49,13 @@ mcp-sequential-thinking/
 │   ├── utils.py        # Common utilities and helper functions
 │   ├── logging_conf.py # Centralized logging configuration
 │   └── __init__.py     # Package initialization
-├── tests/              
+├── tests/
 │   ├── test_analysis.py # Tests for analysis functionality
 │   ├── test_models.py   # Tests for data models
+│   ├── test_server.py   # Tests for MCP server tools
 │   ├── test_storage.py  # Tests for persistence layer
+│   ├── test_storage_utils.py # Tests for storage utility edge cases
+│   ├── test_utils.py    # Tests for common utilities
 │   └── __init__.py
 ├── run_server.py       # Server entry point script
 ├── debug_mcp_connection.py # Utility for debugging connections
@@ -77,7 +80,6 @@ mcp-sequential-thinking/
 
    # For development with testing tools
    uv sync --group dev
-
    ```
 
 2. **Run the Server**
@@ -167,9 +169,7 @@ If you've installed the package globally with `pip install -e .`:
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/arben-adm/mcp-sequential-thinking",
-        "--with",
-        "portalocker",
+        "git+https://github.com/feniix/mcp-sequential-thinking",
         "mcp-sequential-thinking"
       ]
     }
@@ -306,9 +306,7 @@ Add to your Gemini CLI settings at `~/.gemini/settings.json`:
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/arben-adm/mcp-sequential-thinking",
-        "--with",
-        "portalocker",
+        "git+https://github.com/feniix/mcp-sequential-thinking",
         "mcp-sequential-thinking"
       ],
       "env": {}
@@ -449,12 +447,13 @@ For detailed examples of how to customize and extend the Sequential Thinking ser
 - Separating test code
 - Building reusable utilities
 
+## Attribution
 
+This project is maintained by Sebastian Otaegui <feniix@gmail.com>.
 
+It is based on the original [`arben-adm/mcp-sequential-thinking`](https://github.com/arben-adm/mcp-sequential-thinking) project by Arben Ademi. The original project is also licensed under the MIT License.
 
 ## License
 
-MIT License
-
-
+MIT License. See [LICENSE](LICENSE) for the full license text.
 
